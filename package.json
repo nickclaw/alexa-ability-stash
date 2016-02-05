@@ -1,7 +1,7 @@
 {
   "name": "alexa-ability-user-store",
   "version": "0.1.0",
-  "description": "An alexa-ability middleware for storing long lasting user data.",
+  "description": "An alexa-ability middleware for persistent user stores.",
   "main": "lib/index.js",
   "scripts": {
     "test": "./scripts/test.sh"
@@ -22,7 +22,8 @@
     "skill",
     "kit",
     "echo",
-    "ability"
+    "ability",
+    "alexa-ability"
   ],
   "author": {
     "name": "Nicholas Clawson",
