@@ -1,4 +1,4 @@
-alexa-ability-user-store
+alexa-ability-user-store [![Build Status](https://travis-ci.org/nickclaw/alexa-ability-user-store.svg?branch=master)](https://travis-ci.org/nickclaw/alexa-ability-user-store)
 ------------------------
 An alexa-ability middleware for persistent user stores.
 

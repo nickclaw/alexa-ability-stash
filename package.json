@@ -16,6 +16,8 @@
   "keywords": [
     "store",
     "session",
+    "redis",
+    "user",
     "amazon",
     "alexa",
     "skills",
