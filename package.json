@@ -34,13 +34,13 @@
   },
   "license": "MIT",
   "dependencies": {
+    "crc": "^3.4.0",
     "debug": "^2.2.0",
     "express-session": "^1.13.0",
-    "lodash": "^4.2.1"
+    "lodash": "^4.3.0"
   },
   "devDependencies": {
-    "alexa-ability": "^0.5.2",
-    "babel": "^6.3.26",
+    "alexa-ability": "^0.9.1",
     "babel-cli": "^6.4.5",
     "babel-eslint": "^4.1.8",
     "babel-preset-es2015": "^6.3.13",
