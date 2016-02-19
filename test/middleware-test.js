@@ -1,21 +1,28 @@
 import { createUserStoreMiddleware } from '../src/createUserStoreMiddleware';
 import { UserStore } from '../src/UserStore';
 import { Ability } from 'alexa-ability';
+import { MemoryStore } from 'express-session';
 
 const intentRequest = require('./fixtures/intent-request');
+
+function genid(req) {
+    return 'foo';
+}
 
 describe('middleware behavior', function() {
 
     let app = null;
+    let store = null;
 
     beforeEach(function() {
-        app = new Ability();
+        store = new MemoryStore();
+        app = new Ability({ store, genid });
     });
 
-    it('should create a "userStore" property', function(done) {
+    it('should create a "store" property', function(done) {
         const handler = sinon.spy(function(req, next) {
-            expect(req.userStore).to.exist;
-            expect(req.userStore).to.be.instanceOf(UserStore);
+            expect(req.store).to.exist;
+            expect(req.store).to.be.instanceOf(UserStore);
             req.send();
         });
 
@@ -28,14 +35,14 @@ describe('middleware behavior', function() {
         });
     });
 
-    it('should persist data on the "userStore" property', function(done) {
+    it('should persist data on the "store" property', function(done) {
         const handlerA = sinon.spy(function(req, next) {
-            req.userStore.a = 1;
+            req.store.a = 1;
             req.send();
         });
 
         const handlerB = sinon.spy(function(req, next) {
-            expect(req.userStore.a).to.equal(1);
+            expect(req.store.a).to.equal(1);
             req.send();
         });
 
@@ -46,6 +53,7 @@ describe('middleware behavior', function() {
             if (err) return done(err);
             expect(handlerA).to.have.been.called;
 
+            delete app._handlers['GetZodiacHoroscopeIntent'];
             app.on('GetZodiacHoroscopeIntent', handlerB);
             app.handle(intentRequest, function(err) {
                 expect(handlerB).to.have.been.called;
@@ -54,45 +62,39 @@ describe('middleware behavior', function() {
         });
     });
 
-    describe('destroying "userStore"', function() {
+    describe.only('destroying "store"', function() {
 
-        beforeEach(function(done) {
+        beforeEach(function() {
+            store.sessions['foo'] = { foo: 'bar' };
             app.use(createUserStoreMiddleware());
-            app.on('GetZodiacHoroscopeIntent', function(req) {
-                req.userStore.foo = "bar";
-                req.send();
-            });
-            app.handle(intentRequest, done);
         });
 
         it('should be possible by unsetting it', function(done) {
+            app.use((req, next) => {
+                delete req.store;
+                next();
+            });
             app.on('GetZodiacHoroscopeIntent', function(req) {
-                expect(req.userStore.foo).to.equal("bar");
-                req.userStore = null;
+                expect(req.store.foo).to.equal('bar');
                 req.send();
             });
-            app.handle(intentRequest, function(err) {
-                if (err) return done(err);
-                app.on('GetZodiacHoroscopeIntent', function(req) {
-                    expect(req.userStore.foo).to.be.undefined;
-                    req.send();
-                });
-                app.handle(intentRequest, done);
+
+            app.handle(intentRequest, function() {
+                expect(store.session.foo).to.equal(undefined);
+                done();
             });
         });
 
         it('should be possible by destroying it', function(done) {
+            app.use((req, next) => req.store.destroy(next));
             app.on('GetZodiacHoroscopeIntent', function(req) {
-                expect(req.userStore.foo).to.equal("bar");
-                req.userStore.destroy(req.send);
+                expect(req.store.foo).to.equal('bar');
+                req.send();
             });
-            app.handle(intentRequest, function(err) {
-                if (err) return done(err);
-                app.on('GetZodiacHoroscopeIntent', function(req) {
-                    expect(req.userStore.foo).to.be.undefined;
-                    req.send();
-                });
-                app.handle(intentRequest, done);
+
+            app.handle(intentRequest, function() {
+                expect(store.session.foo).to.equal(undefined);
+                done();
             });
         });
     });
