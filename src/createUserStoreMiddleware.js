@@ -49,6 +49,12 @@ export function createUserStoreMiddleware({
             return next();
         }
 
+        // make sure store is connected
+        if (!storeReady) {
+            log('store is disconnected');
+            return next();
+        }
+
         // Handle connection as if there is no session if
         // the store has temporarily disconnected etc
         if (!storeReady) {
@@ -57,26 +63,26 @@ export function createUserStoreMiddleware({
         }
 
         // store info about initial store state
-        const originalId = req.storeId = genid(req);
+        const originalId = genid(req);
         let originalHash = null;
 
         // make store
+        req.storeId = originalId;
         req.store = new UserStore(req, store);
 
-        // monkey patch store.save to rehash
-        const _save = req.store.save.bind(req.store);
+        // monkey patch store.save in order to update hash
+        const _save = req.store.save;
         Object.defineProperty(req.store, 'save', {
             configurable: true,
             enumerable: false,
             writable: true,
             value: function save(...args) {
                 originalHash = hash(this);
-                _save(...args);
+                _save.apply(req.store, args);
             },
         });
 
-
-        // monkey patch req.send()
+        // monkey patch req.send() in order to save final session
         const _send = req.send.bind(req);
         Object.defineProperty(req, 'send', {
             configurable: true,
@@ -123,12 +129,11 @@ export function createUserStoreMiddleware({
         }
 
         function shouldSave(r) { // eslint-disable-line no-unused-vars
-            // can't save nothing
-            if (!r.storeId || !r.store) return false;
-
-            return resave ||                         // always saves
-                   r.storeId !== originalId ||     // or changed name
-                   originalHash !== hash(r.store); // changed value
+            return r.storeId && r.store && (    // has store and storeId and...
+                resave ||                       // always saves or..
+                r.storeId !== originalId ||     // changed name or..
+                originalHash !== hash(r.store)  // changed value.
+            );
         }
     };
 }

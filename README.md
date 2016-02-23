@@ -12,7 +12,7 @@ import { handleAbility } from 'alexa-ability-lambda-handler';
 import userStore from 'alexa-ability-user-store';
 import createRedisStore from 'connect-redis'; // or any compatible express-session store
 
-const RedisStore = createRedisStore(Store);
+const RedisStore = createRedisStore(userStore);
 const store = new RedisStore(options);
 const app = new Ability();
 

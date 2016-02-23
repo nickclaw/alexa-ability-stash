@@ -1,5 +1,6 @@
 import noop from 'lodash/noop';
 import extend from 'lodash/extend';
+import omit from 'lodash/omit';
 import debug from 'debug';
 import { Cookie } from 'express-session';
 
@@ -21,12 +22,11 @@ export class UserStore {
         return this;
     }
 
-    reload(fn) {
+    reload(fn = noop) {
         log('reloading user %s', this._req.storeId);
         this._store.get(this._req.storeId, (err, data = {}) => {
             if (err) return fn(err);
-            console.log(data);
-            extend(this, data);
+            extend(this, omit(data, 'cookie'));
             fn();
         });
 
