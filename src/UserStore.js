@@ -17,7 +17,6 @@ export class UserStore {
 
     save(fn = noop) {
         log('saving user %s', this._req.storeId);
-        console.log(this.toJSON());
         this._store.set(this._req.storeId, this.toJSON(), fn);
         return this;
     }
