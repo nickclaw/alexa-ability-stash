@@ -1,4 +1,4 @@
-import { UserStore } from './UserStore';
+import { Stash } from './Stash';
 import { MemoryStore } from 'express-session';
 import debug from 'debug';
 import get from 'lodash/get';

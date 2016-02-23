@@ -1,4 +1,4 @@
-import { createStashMiddleware as createStash } from './createUserStoreMiddleware';
+import { createStashMiddleware as createStash } from './createStashMiddleware';
 import { Stash } from './Stash';
 import { Store } from 'express-session';
 
