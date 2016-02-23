@@ -5,7 +5,7 @@ import get from 'lodash/get';
 import assert from 'assert';
 import { crc32 } from 'crc';
 
-const log = debug('user-store:storeMiddleware');
+const log = debug('alexa-ability-stash:stashMiddleware');
 
 function generateSessionId(req) {
     const appId = get(req, 'raw.session.application.applicationId');
@@ -22,7 +22,7 @@ function hash(sess) {
     }));
 }
 
-export function createUserStoreMiddleware({
+export function createStashMiddleware({
     store = new MemoryStore(),
     resave = true,
     genid = generateSessionId,
@@ -39,46 +39,39 @@ export function createUserStoreMiddleware({
     store.on('connect', () => log('store connected'), storeReady = true);
 
     // return alexa-ability middleware
-    debug('creating store middleware');
-    return function storeMiddleware(req, next) {
+    debug('creating stash middleware');
+    return function stashMiddleware(req, next) {
         debug('applying middleware');
 
         // self awareness
-        if (req.store) {
-            log('"store" property already exists');
+        if (req.stash) {
+            log('"stash" property already exists');
             return next();
         }
 
         // make sure store is connected
         if (!storeReady) {
-            log('store is disconnected');
+            log('store is disconnected, skipping stash');
             return next();
         }
 
-        // Handle connection as if there is no session if
-        // the store has temporarily disconnected etc
-        if (!storeReady) {
-            log('store is not ready, skipping');
-            return next();
-        }
-
-        // store info about initial store state
+        // save info about initial stash state
         const originalId = genid(req);
         let originalHash = null;
 
-        // make store
-        req.storeId = originalId;
-        req.store = new UserStore(req, store);
+        // make stash
+        req.stashId = originalId;
+        req.stash = new Stash(req, store);
 
-        // monkey patch store.save in order to update hash
-        const _save = req.store.save;
-        Object.defineProperty(req.store, 'save', {
+        // monkey patch stash.save() in order to update hash
+        const _save = req.stash.save;
+        Object.defineProperty(req.stash, 'save', {
             configurable: true,
             enumerable: false,
             writable: true,
             value: function save(...args) {
                 originalHash = hash(this);
-                _save.apply(req.store, args);
+                _save.apply(req.stash, args);
             },
         });
 
@@ -90,14 +83,14 @@ export function createUserStoreMiddleware({
             writable: true,
             value: function send() {
                 if (shouldDestroy(req)) {
-                    log('destroying store');
-                    req.store.destroy(_send);
+                    log('destroying stash');
+                    req.stash.destroy(_send);
                     return;
                 }
 
                 if (shouldSave(req)) {
-                    log('saving store');
-                    req.store.save(_send);
+                    log('saving stash');
+                    req.stash.save(_send);
                     return;
                 }
 
@@ -107,15 +100,15 @@ export function createUserStoreMiddleware({
 
 
         // load the session from streo
-        log('reloading store');
-        req.store.reload(err => {
+        log('reloading stash');
+        req.stash.reload(err => {
             if (err) {
                 log('error loading session, skipping. %s', err.message);
                 return next();
             }
 
-            log('loaded store');
-            originalHash = hash(req.store);
+            log('loaded stash');
+            originalHash = hash(req.stash);
             next();
         });
 
@@ -125,14 +118,14 @@ export function createUserStoreMiddleware({
         //
 
         function shouldDestroy(r) {
-            return r.storeId && !r.store && unset === 'destroy';
+            return r.stashId && !r.stash && unset === 'destroy';
         }
 
         function shouldSave(r) { // eslint-disable-line no-unused-vars
-            return r.storeId && r.store && (    // has store and storeId and...
+            return r.stashId && r.stash && (    // has stash and stashId and...
                 resave ||                       // always saves or..
-                r.storeId !== originalId ||     // changed name or..
-                originalHash !== hash(r.store)  // changed value.
+                r.stashId !== originalId ||     // changed name or..
+                originalHash !== hash(r.stash)  // changed value.
             );
         }
     };

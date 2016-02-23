@@ -1,8 +1,8 @@
 import { Ability } from 'alexa-ability';
-import { createUserStoreMiddleware } from '../src/createUserStoreMiddleware';
+import { createStashMiddleware } from '../src/createStashMiddleware';
 import intentRequest from './fixtures/intent-request';
 
-describe('createUserStore', function() {
+describe('createStash', function() {
 
     let app = null;
     beforeEach(function() {
@@ -10,7 +10,7 @@ describe('createUserStore', function() {
     });
 
     it('should return a middleware function', function() {
-        const middleware = createUserStoreMiddleware();
+        const middleware = createStashMiddleware();
         expect(middleware).to.be.instanceOf(Function);
         expect(middleware.length).to.equal(2);
     });
@@ -18,11 +18,11 @@ describe('createUserStore', function() {
     describe('middleware function', function() {
 
         describe('request properties', function() {
-            it('should set a "store" property on the request', function() {
+            it('should set a "stash" property on the request', function() {
 
             });
 
-            it('should set a "storeId" property on the request', function() {
+            it('should set a "stashId" property on the request', function() {
 
             });
         });
@@ -60,17 +60,17 @@ describe('createUserStore', function() {
 
             });
 
-            it('should not resave store when false', function() {
+            it('should not resave stash when false', function() {
 
             });
         });
 
         describe('store disconnect behavior', function() {
-            it('should skip getting the store when disconnected', function() {
+            it('should skip getting the stash when disconnected', function() {
 
             });
 
-            it('should get the store when connected', function() {
+            it('should get the stash when connected', function() {
 
             });
         });

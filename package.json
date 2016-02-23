@@ -1,7 +1,7 @@
 {
-  "name": "alexa-ability-user-store",
+  "name": "alexa-ability-stash",
   "version": "0.1.0",
-  "description": "An alexa-ability middleware for persistent user stores.",
+  "description": "An alexa-ability middleware for persistent user storage.",
   "main": "lib/index.js",
   "scripts": {
     "build": "rm -rf lib && babel src --out-dir lib",
@@ -16,10 +16,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/nickclaw/alexa-ability-user-store"
+    "url": "https://github.com/nickclaw/alexa-ability-stash"
   },
   "bugs": {
-    "url": "http://github.com/nickclaw/alexa-ability-user-store/issues"
+    "url": "http://github.com/nickclaw/alexa-ability-stash/issues"
   },
   "keywords": [
     "store",
@@ -28,7 +28,7 @@
     "user",
     "amazon",
     "alexa",
-    "skills",
+    "stash",
     "skill",
     "kit",
     "echo",

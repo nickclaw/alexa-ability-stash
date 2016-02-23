@@ -1,6 +1,6 @@
 
 
-describe('UserStore', function() {
+describe('Stash', function() {
 
     describe('properties', function() {
         it('should have a "_req" property', function() {
@@ -16,7 +16,7 @@ describe('UserStore', function() {
         });
     });
 
-    describe('UserStore.prototype.save', function() {
+    describe('Stash.prototype.save', function() {
         it('should call "set" on the backing store', function() {
 
         });
@@ -26,7 +26,7 @@ describe('UserStore', function() {
         });
     });
 
-    describe('UserStore.prototype.reload', function() {
+    describe('Stash.prototype.reload', function() {
         it('should call "get" on the backing store', function() {
 
         });
@@ -48,12 +48,12 @@ describe('UserStore', function() {
         });
     });
 
-    describe('UserStore.prototype.destroy', function() {
+    describe('Stash.prototype.destroy', function() {
         it('should call "destroy" on the backing store', function() {
 
         });
 
-        it('should delete "store" and "storeId" properties from the request object', function() {
+        it('should delete "stash" and "stashId" properties from the request object', function() {
 
         });
 
@@ -62,7 +62,7 @@ describe('UserStore', function() {
         });
     });
 
-    describe('UserStore.prototype.toJSON', function() {
+    describe('Stash.prototype.toJSON', function() {
         it('should return a plain object', function() {
             // TODO make sure plain!
         });

@@ -1,6 +1,6 @@
-alexa-ability-user-store [![Build Status](https://travis-ci.org/nickclaw/alexa-ability-user-store.svg?branch=master)](https://travis-ci.org/nickclaw/alexa-ability-user-store)
+alexa-ability-stash [![Build Status](https://travis-ci.org/nickclaw/alexa-ability-stash.svg?branch=master)](https://travis-ci.org/nickclaw/alexa-ability-stash)
 ------------------------
-An alexa-ability middleware for persistent user stores.
+An alexa-ability middleware for persistent user storage.
 
 > Warning: Still in development. Not suitable for use in production yet.
 
@@ -9,22 +9,22 @@ An alexa-ability middleware for persistent user stores.
 ```js
 import { Ability } from 'alexa-ability';
 import { handleAbility } from 'alexa-ability-lambda-handler';
-import userStore from 'alexa-ability-user-store';
+import createStash from 'alexa-ability-stash';
 import createRedisStore from 'connect-redis'; // or any compatible express-session store
 
-const RedisStore = createRedisStore(userStore);
+const RedisStore = createRedisStore(createStash);
 const store = new RedisStore(options);
 const app = new Ability();
 
-app.use(userStore({ store }));
+app.use(createStash({ store }));
 
 app.on('LuckyNumberIntent', function(req, next) {
-    if (!req.store.luckyNumber) {
+    if (!req.stash.luckyNumber) {
         // persisted "forever"
-        req.store.luckyNumber = Math.floor(Math.random() * 100 + 1);
+        req.stash.luckyNumber = Math.floor(Math.random() * 100 + 1);
     }
 
-    req.say(`Your lucky number is ${req.store.luckyNumber}!`).end();
+    req.say(`Your lucky number is ${req.stash.luckyNumber}!`).end();
 });
 
 export const handler = handleAbility(app);
@@ -32,8 +32,8 @@ export const handler = handleAbility(app);
 
 ### API
 
-##### `userStore(options) -> middleware`
-Creates a middleware function to handle the store.
+##### `createStash(options) -> middleware`
+Creates a middleware function to handle the stash.
 
 Takes the following options:
  - `store`
@@ -42,5 +42,5 @@ Takes the following options:
  - `resave`
 
 Attaches two properties to the request object:
- - `store`
- - `storeId`
+ - `stash`
+ - `stashId`
