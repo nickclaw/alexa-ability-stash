@@ -19,17 +19,28 @@ const app = new Ability();
 app.use(userStore({ store }));
 
 app.on('LuckyNumberIntent', function(req, next) {
-    if (!req.userStore.luckyNumber) {
+    if (!req.store.luckyNumber) {
         // persisted "forever"
-        req.userStore.luckyNumber = Math.floor(Math.random() * 100 + 1);
+        req.store.luckyNumber = Math.floor(Math.random() * 100 + 1);
     }
 
-    req.say(`Your lucky number is ${req.userStore.luckyNumber}!`).end();
+    req.say(`Your lucky number is ${req.store.luckyNumber}!`).end();
 });
 
 export const handler = handleAbility(app);
 ```
 
-### Stores
+### API
 
-TBD
+##### `userStore(options) -> middleware`
+Creates a middleware function to handle the store.
+
+Takes the following options:
+ - `store`
+ - `genid`
+ - `unset`
+ - `resave`
+
+Attaches two properties to the request object:
+ - `store`
+ - `storeId`
