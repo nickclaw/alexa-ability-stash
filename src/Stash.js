@@ -1,6 +1,7 @@
 import noop from 'lodash/noop';
 import extend from 'lodash/extend';
 import omit from 'lodash/omit';
+import each from 'lodash/each';
 import debug from 'debug';
 import { Cookie } from 'express-session';
 
@@ -25,6 +26,8 @@ export class Stash {
         log('reloading user %s', this._req.stashId);
         this._store.get(this._req.stashId, (err, data = {}) => {
             if (err) return fn(err);
+
+            each(this, (val, key) => delete this[key]);
             extend(this, omit(data, 'cookie'));
             fn();
         });
