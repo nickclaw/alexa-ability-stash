@@ -39,9 +39,9 @@ export function createStashMiddleware({
     store.on('connect', () => log('store connected'), storeReady = true);
 
     // return alexa-ability middleware
-    debug('creating stash middleware');
+    log('creating stash middleware');
     return function stashMiddleware(req, next) {
-        debug('applying middleware');
+        log('applying middleware');
 
         // self awareness
         if (req.stash) {
@@ -84,7 +84,9 @@ export function createStashMiddleware({
             value: function send() {
                 if (shouldDestroy(req)) {
                     log('destroying stash');
-                    req.stash.destroy(_send);
+                    // there's a chance we have no stash
+                    // so go straight to the store
+                    store.destroy(req.stashId, _send);
                     return;
                 }
 
@@ -121,7 +123,7 @@ export function createStashMiddleware({
             return r.stashId && !r.stash && unset === 'destroy';
         }
 
-        function shouldSave(r) { // eslint-disable-line no-unused-vars
+        function shouldSave(r) {
             return r.stashId && r.stash && (    // has stash and stashId and...
                 resave ||                       // always saves or..
                 r.stashId !== originalId ||     // changed name or..
